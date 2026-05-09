@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ar-DZ" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Annaba Monitor · adhahi.dz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --accent: #4ade80;
+    --accent-dim: rgba(74,222,128,0.12);
+    --accent-border: rgba(74,222,128,0.3);
+    --danger: #f87171;
+    --danger-dim: rgba(248,113,113,0.1);
+    --danger-border: rgba(248,113,113,0.3);
+    --info: #60a5fa;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans Arabic', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    padding: 20px 20px 0;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .app-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .wilaya-name {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .wilaya-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: var(--mono);
+  }
+
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+    transition: all 0.4s ease;
+  }
+
+  .chip-unavail {
+    background: var(--danger-dim);
+    border-color: var(--danger-border);
+    color: var(--danger);
+  }
+
+  .chip-avail {
+    background: var(--accent-dim);
+    border-color: var(--accent-border);
+    color: var(--accent);
+    animation: glow-pulse 2s infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    50% { box-shadow: 0 0 16px 2px rgba(74,222,128,0.18); }
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .dot-pulse { animation: blink 1.4s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  .section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:active { transform: scale(0.97); background: rgba(255,255,255,0.06); }
+
+  button.primary {
+    background: var(--accent-dim);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  button.primary.active {
+    background: var(--danger-dim);
+    border-color: var(--danger-border);
+    color: var(--danger);
+  }
+
+  button:disabled { opacity: 0.4; pointer-events: none; }
+
+  .interval-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 99px;
+    outline: none;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  .interval-val {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    min-width: 38px;
+    text-align: right;
+  }
+
+  .notif-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .notif-text { font-size: 13px; color: var(--muted); flex: 1; }
+  .notif-hint { font-size: 11px; color: var(--muted); margin-top: 8px; font-family: var(--mono); }
+
+  .log-area {
+    flex: 1;
+    padding: 16px 20px;
+    overflow-y: auto;
+    max-height: 280px;
+  }
+
+  .log-entry {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .log-entry:last-child { border-bottom: none; }
+  .log-time { color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+  .log-ok { color: var(--accent); }
+  .log-err { color: var(--danger); }
+  .log-info { color: #94a3b8; }
+
+  .footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .next-check {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .check-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Big alert overlay */
+  .alert-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .alert-overlay.show { display: flex; }
+
+  .alert-box {
+    background: var(--surface);
+    border: 1px solid var(--accent-border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: center;
+    max-width: 320px;
+    width: 100%;
+    box-shadow: 0 0 60px rgba(74,222,128,0.15);
+    animation: pop-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes pop-in {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .alert-icon { font-size: 48px; margin-bottom: 12px; }
+  .alert-title { font-size: 20px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+  .alert-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+  .alert-box button {
+    width: 100%;
+    justify-content: center;
+    background: var(--accent-dim);
+    border-color: var(--accent-border);
+    color: var(--accent);
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .wake-lock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+  }
+  .wake-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); }
+  .wake-dot.active { background: var(--accent); }
+
+  .test-section { border-color: rgba(250,204,21,0.15); }
+  .test-label { color: rgba(250,204,21,0.5) !important; }
+  .btn-test {
+    background: rgba(250,204,21,0.07) !important;
+    border-color: rgba(250,204,21,0.25) !important;
+    color: #fbbf24 !important;
+  }
+  .test-hint { font-size: 11px; color: var(--muted); margin-top: 10px; font-family: var(--mono); line-height: 1.6; }
+  .test-hint b { color: #fbbf24; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <span class="app-name">adhahi.dz · monitor</span>
+    <span id="status-chip" class="status-chip chip-unavail">
+      <span class="dot dot-pulse" id="status-dot"></span>
+      <span id="status-text">unavailable</span>
+    </span>
+  </div>
+  <div class="wilaya-name">Annaba <span style="color:var(--muted);font-weight:400">/ عنابة</span></div>
+  <div class="wilaya-sub">wilaya · 23</div>
+</div>
+
+<div class="section">
+  <div class="controls">
+    <button onclick="checkNow()" id="btn-check">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Check now
+    </button>
+    <button class="primary" onclick="toggleMonitor()" id="btn-monitor">
+      <svg width="14" height="14" id="monitor-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span id="monitor-label">Start</span>
+    </button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Check interval</div>
+  <div class="interval-row">
+    <input type="range" id="interval" min="10" max="300" step="10" value="30" oninput="document.getElementById('ival').textContent=this.value+'s'">
+    <span class="interval-val" id="ival">30s</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Notifications</div>
+  <div class="notif-row">
+    <span class="notif-text">Alert me when Annaba opens</span>
+    <button id="notif-btn" onclick="enableNotif()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="notif-label">Enable</span>
+    </button>
+  </div>
+  <div class="notif-hint" id="notif-hint">Tap Enable → allow notifications in Chrome</div>
+</div>
+
+<div class="section test-section">
+  <div class="section-label test-label">Test mode</div>
+  <div class="controls" style="flex-wrap:wrap; gap:8px;">
+    <button class="btn-test" onclick="simulateAvailable()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Simulate available
+    </button>
+    <button class="btn-test" onclick="testNotification()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Test notification
+    </button>
+    <button class="btn-test" onclick="resetToUnavailable()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Reset
+    </button>
+  </div>
+  <div class="test-hint">
+    <b>Simulate available</b> — triggers the full alert (overlay + notification) as if the API returned <b>available: true</b>.<br>
+    <b>Test notification</b> — sends a Chrome notification only, without changing status.<br>
+    <b>Reset</b> — resets status back to unavailable so you can test again.
+  </div>
+</div>
+
+<div class="log-area" id="log-area">
+  <div class="section-label" style="margin-bottom:8px;">Activity log</div>
+  <div id="log"></div>
+</div>
+
+<div class="footer">
+  <span class="next-check" id="next-label"></span>
+  <span class="wake-lock-badge">
+    <span class="wake-dot" id="wake-dot"></span>
+    <span id="wake-label">screen lock</span>
+  </span>
+</div>
+
+<!-- Alert overlay -->
+<div class="alert-overlay" id="alert-overlay">
+  <div class="alert-box">
+    <div class="alert-icon">✅</div>
+    <div class="alert-title">Annaba is open!</div>
+    <div class="alert-sub">Wilaya 23 is now available on adhahi.dz — register quickly!</div>
+    <button onclick="document.getElementById('alert-overlay').classList.remove('show'); openAdhahi();">Open adhahi.dz →</button>
+  </div>
+</div>
+
+<script>
+const API = 'https://adhahi.dz/api/v1/public/wilaya-quotas';
+const TARGET = '23';
+let monitoring = false, timer = null, cdTimer = null, checks = 0, nextIn = 0;
+let wakeLock = null, notifReady = false, lastState = null;
+
+function openAdhahi() { window.open('https://adhahi.dz', '_blank'); }
+
+function addLog(msg, type) {
+  const el = document.getElementById('log');
+  const t = new Date().toLocaleTimeString('en-GB');
+  const d = document.createElement('div');
+  d.className = 'log-entry';
+  d.innerHTML = `<span class="log-time">${t}</span><span class="log-${type}">${msg}</span>`;
+  el.prepend(d);
+  const all = el.querySelectorAll('.log-entry');
+  if (all.length > 60) all[all.length-1].remove();
+}
+
+function setStatus(avail) {
+  const chip = document.getElementById('status-chip');
+  const text = document.getElementById('status-text');
+  chip.className = 'status-chip ' + (avail ? 'chip-avail' : 'chip-unavail');
+  text.textContent = avail ? 'available!' : 'unavailable';
+  if (avail && lastState === false) {
+    document.getElementById('alert-overlay').classList.add('show');
+    if (notifReady && Notification.permission === 'granted') {
+      new Notification('✅ Annaba is now available!', {
+        body: 'Wilaya 23 is open on adhahi.dz — register now!',
+        icon: 'https://adhahi.dz/favicon.ico',
+        requireInteraction: true
+      });
+    }
+    if (monitoring) toggleMonitor();
+  }
+  lastState = avail;
+}
+
+async function checkNow() {
+  const btn = document.getElementById('btn-check');
+  btn.disabled = true;
+  addLog('fetching API…', 'info');
+  try {
+    const r = await fetch(API, { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    const w = data.find(x => x.wilayaCode === TARGET);
+    if (!w) throw new Error('wilaya 23 not found');
+    checks++;
+    document.getElementById('check-count') && (document.getElementById('check-count').textContent = checks + ' checks');
+    setStatus(w.available);
+    addLog('wilaya 23 → ' + (w.available ? '✓ AVAILABLE' : 'not available yet'), w.available ? 'ok' : 'info');
+  } catch(e) {
+    addLog('error: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function getInterval() { return parseInt(document.getElementById('interval').value) * 1000; }
+
+function startCountdown() {
+  clearInterval(cdTimer);
+  nextIn = Math.round(getInterval() / 1000);
+  const lbl = document.getElementById('next-label');
+  lbl.textContent = 'next check in ' + nextIn + 's';
+  cdTimer = setInterval(() => {
+    nextIn--;
+    lbl.textContent = nextIn > 0 ? 'next check in ' + nextIn + 's' : 'checking…';
+  }, 1000);
+}
+
+async function acquireWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      document.getElementById('wake-dot').classList.add('active');
+      document.getElementById('wake-label').textContent = 'screen on';
+      wakeLock.addEventListener('release', () => {
+        document.getElementById('wake-dot').classList.remove('active');
+        document.getElementById('wake-label').textContent = 'screen lock';
+      });
+    } catch(e) {}
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
+function toggleMonitor() {
+  monitoring = !monitoring;
+  const icon = document.getElementById('monitor-icon');
+  const lbl = document.getElementById('monitor-label');
+  const btn = document.getElementById('btn-monitor');
+  if (monitoring) {
+    lbl.textContent = 'Stop';
+    btn.classList.add('active');
+    icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    acquireWakeLock();
+    checkNow();
+    timer = setInterval(() => { checkNow(); startCountdown(); }, getInterval());
+    startCountdown();
+    addLog('monitoring started (every ' + document.getElementById('interval').value + 's)', 'info');
+  } else {
+    lbl.textContent = 'Start';
+    btn.classList.remove('active');
+    icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+    clearInterval(timer); clearInterval(cdTimer);
+    document.getElementById('next-label').textContent = '';
+    releaseWakeLock();
+    addLog('monitoring stopped', 'info');
+  }
+}
+
+async function enableNotif() {
+  if (!('Notification' in window)) {
+    document.getElementById('notif-hint').textContent = 'Notifications not supported in this browser.';
+    return;
+  }
+  const p = await Notification.requestPermission();
+  if (p === 'granted') {
+    notifReady = true;
+    document.getElementById('notif-label').textContent = 'Enabled ✓';
+    document.getElementById('notif-btn').disabled = true;
+    document.getElementById('notif-hint').textContent = 'You will be notified when Annaba becomes available.';
+  } else {
+    document.getElementById('notif-hint').textContent = 'Denied — enable in Chrome site settings.';
+  }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if (monitoring && document.visibilityState === 'visible' && !wakeLock) {
+    await acquireWakeLock();
+  }
+});
+
+if ('Notification' in window && Notification.permission === 'granted') {
+  notifReady = true;
+  document.getElementById('notif-label').textContent = 'Enabled ✓';
+  document.getElementById('notif-btn').disabled = true;
+  document.getElementById('notif-hint').textContent = 'Notifications already enabled.';
+}
+
+addLog('ready — tap Start to begin monitoring', 'info');
+
+function simulateAvailable() {
+  addLog('[TEST] simulating available = true…', 'info');
+  lastState = false;
+  setStatus(true);
+  addLog('[TEST] ✓ alert triggered — check overlay + notification', 'ok');
+}
+
+function testNotification() {
+  if (!('Notification' in window)) {
+    addLog('[TEST] notifications not supported in this browser', 'err');
+    return;
+  }
+  if (Notification.permission !== 'granted') {
+    addLog('[TEST] notifications not enabled — tap Enable first', 'err');
+    return;
+  }
+  new Notification('✅ Annaba is now available! (TEST)', {
+    body: 'This is a test notification from the Annaba monitor.',
+    icon: 'https://adhahi.dz/favicon.ico',
+    requireInteraction: true
+  });
+  addLog('[TEST] notification sent — check your notification bar', 'ok');
+}
+
+function resetToUnavailable() {
+  lastState = false;
+  setStatus(false);
+  document.getElementById('alert-overlay').classList.remove('show');
+  addLog('[TEST] reset to unavailable', 'info');
+}
+</script>
+</body>
+</html>
